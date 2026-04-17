@@ -18,11 +18,11 @@ const Logo = () => (
 
 const Navbar = () => {
   const { isAuthenticated, logout } = useAuth();
-  
+
   return (
     <nav className="w-full border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black transition-colors duration-300 top-0 sticky z-50">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        
+
         {/* Left: Logo */}
         <div className="flex-shrink-0">
           <Logo />
@@ -42,11 +42,11 @@ const Navbar = () => {
           <button className="text-neutral-500 hover:text-black dark:hover:text-white transition-colors p-2">
             <Search size={20} />
           </button>
-          
+
           <Link to="/api-settings" className="text-neutral-500 hover:text-black dark:hover:text-white transition-colors p-2" title="API Settings">
             <KeySquare size={20} />
           </Link>
-          
+
           {isAuthenticated ? (
             <button onClick={logout} className="text-neutral-500 hover:text-black dark:hover:text-white transition-colors p-2" title="Logout">
               <LogOut size={20} />
@@ -69,18 +69,18 @@ export const Layout = () => {
       <main className="flex-grow">
         <Outlet />
       </main>
-      
+
       {/* Footer matching standard modern style */}
       <footer className="bg-black text-white py-12 mt-12 w-full">
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center space-y-8">
           <div className="text-center">
-             <Logo />
+            <Logo />
           </div>
           <div className="flex space-x-6 text-sm font-bold uppercase tracking-widest text-neutral-400">
-             <Link to="/" className="hover:text-white">About</Link>
-             <Link to="/" className="hover:text-white">Science</Link>
-             <Link to="/" className="hover:text-white">Economy</Link>
-             <Link to="/" className="hover:text-white">Business</Link>
+            <Link to="/" className="hover:text-white">About</Link>
+            <Link to="/" className="hover:text-white">Science</Link>
+            <Link to="/" className="hover:text-white">Economy</Link>
+            <Link to="/" className="hover:text-white">Business</Link>
           </div>
           <p className="text-neutral-500 text-sm">© 2026 TruthX platform. All rights reserved.</p>
         </div>
