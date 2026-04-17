@@ -62,31 +62,31 @@ export const Home = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
-      
+
       {/* Featured Header */}
       <div className="mb-16 border-b border-black pb-8 dark:border-white">
-         <h1 className="text-5xl md:text-7xl font-bold font-serif tracking-tight mb-4 leading-none">
-           Truth Beyond the Surface
-         </h1>
-         <p className="text-xl text-neutral-500 max-w-2xl font-bold uppercase tracking-widest text-sm">
-           Curated insights, bold stories, and verified facts.
-         </p>
+        <h1 className="text-5xl md:text-7xl font-bold font-serif tracking-tight mb-4 leading-none">
+          Truth Beyond the Surface
+        </h1>
+        <p className="text-xl text-neutral-500 max-w-2xl font-bold uppercase tracking-widest text-sm">
+          Curated insights, bold stories, and verified facts.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 gap-y-16">
         {MOCK_NEWS.map(article => (
-          <NewsCard 
-            key={article.id} 
-            article={article} 
-            onVerify={handleVerify} 
+          <NewsCard
+            key={article.id}
+            article={article}
+            onVerify={handleVerify}
           />
         ))}
       </div>
 
       {selectedArticle && (
-        <VerificationModal 
-          article={selectedArticle} 
-          onClose={() => setSelectedArticle(null)} 
+        <VerificationModal
+          article={selectedArticle}
+          onClose={() => setSelectedArticle(null)}
         />
       )}
     </div>

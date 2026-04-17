@@ -24,7 +24,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
 
         {/* Left: Logo */}
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <Logo />
         </div>
 
@@ -66,7 +66,7 @@ export const Layout = () => {
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300">
       <Navbar />
-      <main className="flex-grow">
+      <main className="grow">
         <Outlet />
       </main>
 

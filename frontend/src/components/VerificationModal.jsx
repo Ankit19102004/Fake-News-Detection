@@ -13,6 +13,7 @@ export const VerificationModal = ({ article, onClose }) => {
 
   useEffect(() => {
     if (!isAuthenticated) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus('needs_auth');
       return;
     }
@@ -46,6 +47,7 @@ export const VerificationModal = ({ article, onClose }) => {
           });
           setStatus('result');
         }
+      // eslint-disable-next-line no-unused-vars
       } catch (err) {
         setStatus('error');
         setResult({ error: "Failed to verify article." });

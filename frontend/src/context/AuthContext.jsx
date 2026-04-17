@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
     const savedUser = localStorage.getItem('truthx_auth');
     if (savedUser) {
       const parsedUser = JSON.parse(savedUser);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsAuthenticated(true);
       setUser(parsedUser);
       
@@ -81,4 +82,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);
