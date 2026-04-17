@@ -871,9 +871,9 @@ def verify():
                 # Conflict info
                 "conflict_detected": conflict_flag,
                 "message": (
-                    "⚠️ External sources strongly contradict model prediction"
+                    "External sources strongly contradict model prediction"
                     if conflict_flag
-                    else "✅ No conflict detected"
+                    else "No conflict detected"
                 ),
                 # Model breakdown
                 "models": format_output(raw),

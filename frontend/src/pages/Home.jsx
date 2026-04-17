@@ -68,7 +68,7 @@ export const Home = () => {
         <h1 className="text-5xl md:text-7xl font-bold font-serif tracking-tight mb-4 leading-none">
           Truth Beyond the Surface
         </h1>
-        <p className="text-xl text-neutral-500 max-w-2xl font-bold uppercase tracking-widest text-sm">
+        <p className="text-xl text-neutral-500 max-w-2xl font-bold uppercase tracking-widest">
           Curated insights, bold stories, and verified facts.
         </p>
       </div>
