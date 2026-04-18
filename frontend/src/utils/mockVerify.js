@@ -22,7 +22,7 @@ export async function mockVerify(title, text = "", apiKey) {
 
         return {
             verdict: data.prediction === "Real News" ? "REAL" : "FAKE",
-            confidence: data.confidence,
+            confidence: data.confidence,              // ✅ RAW
             final_score: data.final_score,
             external_score: data.external_score,
             conflict_detected: data.conflict_detected,

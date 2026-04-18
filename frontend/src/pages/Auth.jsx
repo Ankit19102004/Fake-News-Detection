@@ -7,7 +7,7 @@ export const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
+  
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -27,12 +27,12 @@ export const Auth = () => {
         <h2 className="text-3xl font-serif font-bold mb-6 text-center">
           {isLogin ? 'Welcome Back' : 'Join TruthX'}
         </h2>
-
+        
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-xs font-bold uppercase tracking-widest text-neutral-500 mb-2">Email Address</label>
-            <input
-              type="email"
+            <input 
+              type="email" 
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -40,10 +40,10 @@ export const Auth = () => {
               placeholder="you@example.com"
             />
           </div>
-
+          
           <div>
             <label className="block text-xs font-bold uppercase tracking-widest text-neutral-500 mb-2">Password</label>
-            <input
+            <input 
               type="password"
               required
               value={password}
@@ -53,8 +53,8 @@ export const Auth = () => {
             />
           </div>
 
-          <button
-            type="submit"
+          <button 
+            type="submit" 
             disabled={isLoading}
             className="w-full bg-black text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest text-sm py-4 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors mt-8 disabled:opacity-50"
           >
@@ -63,7 +63,7 @@ export const Auth = () => {
         </form>
 
         <div className="mt-8 text-center">
-          <button
+          <button 
             type="button"
             onClick={() => setIsLogin(!isLogin)}
             className="text-sm text-neutral-500 hover:text-black dark:hover:text-white font-bold transition-colors"
