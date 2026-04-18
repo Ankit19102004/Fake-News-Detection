@@ -31,7 +31,7 @@ export const ApiSettings = () => {
           API Secret Key
         </label>
         <div className="relative mb-6">
-          <input 
+          <input
             type={showKey ? "text" : "password"}
             readOnly
             value={apiKey || "Not generated yet"}
@@ -49,8 +49,8 @@ export const ApiSettings = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={handleCopy}
             disabled={!apiKey}
             className="bg-black text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest text-sm px-8 py-3 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors flex items-center gap-2 disabled:opacity-50"
@@ -58,7 +58,7 @@ export const ApiSettings = () => {
             <Copy size={16} />
             Copy Key
           </button>
-          
+
           {copied && (
             <span className="text-green-600 dark:text-green-500 flex items-center gap-2 ml-auto font-bold uppercase tracking-widest text-sm animate-in fade-in">
               <CheckCircle2 size={18} />

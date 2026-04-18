@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsAuthenticated(true);
       setUser(parsedUser);
-      
+
       const userApiKey = localStorage.getItem(`truthx_api_key_${parsedUser.email}`);
       if (userApiKey) {
         setApiKey(userApiKey);
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setUser(mockUser);
       localStorage.setItem('truthx_auth', JSON.stringify(mockUser));
-      
+
       // Fetch or generate user specific API Key
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/generate_key`, {
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
           body: JSON.stringify({ user_id: email })
         });
         const data = await response.json();
-        
+
         if (data.status === "success" && data.api_key) {
           setApiKey(data.api_key);
           localStorage.setItem(`truthx_api_key_${email}`, data.api_key);

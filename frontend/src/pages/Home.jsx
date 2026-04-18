@@ -13,6 +13,14 @@ const MOCK_NEWS = [
   },
   {
     id: 2,
+    title: "Australia wins 2023 ICC Cricket World Cup final against India",
+    category: "Sport",
+    date: "Nov 19 • 2023",
+    description: "Australia won the 2023 ICC Men’s Cricket World Cup, defeating host nation India in the final on November 19, 2023, for their sixth title. The tournament, held in India, saw Virat Kohli named Player of the Tournament for his record 765 runs. The event generated a $1.39 billion economic impact and broke viewership records, with the final drawing massive global engagement.",
+    image: "https://www.reuters.com/resizer/v2/BNBV7GTOSRIOFAZIFBFKTWQM44.jpg?auth=99c5cbe885c196b142d4bb3be2fa0b78d4fda5ab30e37bb7912bf6c7afb70a79"
+  },
+  {
+    id: 3,
     title: "New Satellite Imaging Reveals Ancient Mega-Structures Beneath Ice",
     category: "Science",
     date: "Feb 17 • 2026",
@@ -20,7 +28,7 @@ const MOCK_NEWS = [
     image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200&h=800"
   },
   {
-    id: 3,
+    id: 7,
     title: "The Next Era of Wearable Hardware: Form Meets Ambient Computing",
     category: "Business",
     date: "Apr 14 • 2026",
@@ -50,7 +58,8 @@ const MOCK_NEWS = [
     date: "Jan 12 • 2026",
     description: "Freight fleets operating entirely without human oversight have completed their ten-thousandth successful intercontinental delivery.",
     image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1200&h=800"
-  }
+  },
+
 ];
 
 export const Home = () => {
