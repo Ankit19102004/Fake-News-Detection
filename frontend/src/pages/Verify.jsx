@@ -35,8 +35,8 @@ const PieChart = ({ value, isReal, conflict, trigger }) => {
   }, [trigger, value]);
 
   return (
-    <div className="relative w-[120px] h-[120px] flex items-center justify-center drop-shadow-sm">
-      <svg className="rotate-[-90deg]" height="120" width="120">
+    <div className="relative w-30 h-30 flex items-center justify-center drop-shadow-sm">
+      <svg className="-rotate-90" height="120" width="120">
         <circle
           stroke="currentColor"
           className="text-black/10 dark:text-white/10 transition-colors duration-300"
