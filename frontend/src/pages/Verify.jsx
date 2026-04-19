@@ -3,14 +3,93 @@ import { useAuth } from '../context/AuthContext';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { mockVerify } from '../utils/mockVerify';
 
+const PieChart = ({ value, isReal, conflict, trigger }) => {
+  const [progress, setProgress] = React.useState(0);
+
+  const radius = 45;
+  const stroke = 8;
+  const normalizedRadius = radius - stroke * 0.5;
+  const circumference = normalizedRadius * 2 * Math.PI;
+
+  React.useEffect(() => {
+    if (!trigger) return;
+
+    let start = 0;
+    const duration = 1000;
+    const stepTime = 16;
+    const steps = duration / stepTime;
+    const increment = value / steps;
+
+    const interval = setInterval(() => {
+      start += increment;
+
+      if (start >= value) {
+        start = value;
+        clearInterval(interval);
+      }
+
+      setProgress(Math.round(start));
+    }, stepTime);
+
+    return () => clearInterval(interval);
+  }, [trigger, value]);
+
+  return (
+    <div className="relative w-[120px] h-[120px] flex items-center justify-center drop-shadow-sm">
+      <svg className="rotate-[-90deg]" height="120" width="120">
+        <circle
+          stroke="currentColor"
+          className="text-black/10 dark:text-white/10 transition-colors duration-300"
+          fill="transparent"
+          strokeWidth={stroke}
+          r={normalizedRadius}
+          cx="60"
+          cy="60"
+        />
+        <circle
+          stroke="currentColor"
+          className={`transition-colors duration-300 ${conflict
+              ? "text-rose-500"
+              : progress < 60
+                ? "text-neutral-400"
+                : progress < 75
+                  ? "text-amber-500"
+                  : isReal
+                    ? "text-emerald-500"
+                    : "text-rose-500"
+            }`}
+          fill="transparent"
+          strokeWidth={stroke}
+          strokeDasharray={`${circumference} ${circumference}`}
+          style={{
+            strokeDashoffset:
+              circumference - (progress / 100) * circumference,
+            transition: "stroke-dashoffset 0.1s linear",
+          }}
+          strokeLinecap="round"
+          r={normalizedRadius}
+          cx="60"
+          cy="60"
+        />
+      </svg>
+
+      <div className="absolute text-xl font-bold tracking-tighter text-black/80 dark:text-white/90">
+        {progress}%
+      </div>
+    </div>
+  );
+};
+
 export const Verify = () => {
   const { isAuthenticated, apiKey } = useAuth();
-  
+
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
-  
+
   const [status, setStatus] = useState('idle'); // idle, verifying, result, error, needs_auth
   const [result, setResult] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [animatePie, setAnimatePie] = useState(false);
 
   const handleVerify = async (e) => {
     e.preventDefault();
@@ -18,7 +97,7 @@ export const Verify = () => {
       alert('Please enter a title or text to verify.');
       return;
     }
-    
+
     if (!isAuthenticated) {
       setStatus('needs_auth');
       return;
@@ -27,7 +106,7 @@ export const Verify = () => {
       setStatus('needs_key');
       return;
     }
-
+    setAnimatePie(false);
     setStatus('verifying');
     try {
       const res = await mockVerify(title, text, apiKey);
@@ -86,8 +165,9 @@ export const Verify = () => {
           isReal
         });
         setStatus('result');
+        setAnimatePie(true);
       }
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setStatus('error');
       setResult({ error: "Failed to verify article." });
@@ -96,24 +176,53 @@ export const Verify = () => {
 
   const getStyles = () => {
     if (!result) return {};
+
     if (result.conflict) {
-      return { bg: "bg-red-100 border-red-300 border-l-4 border-l-red-600", text: "text-red-800", icon: "⚠️" };
+      return {
+        bg: "bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/50 border-l-4 border-l-rose-500",
+        text: "text-rose-800 dark:text-rose-400",
+        border: "border-rose-200 dark:border-rose-900/50",
+        divide: "divide-rose-200 dark:divide-rose-900/50"
+      };
     }
+
     if (result.overallScore < 60) {
-      return { bg: "bg-gray-100 border-gray-300 border-l-4 border-l-gray-500", text: "text-gray-800", icon: "❓" };
+      return {
+        bg: "bg-neutral-50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700/50 border-l-4 border-l-neutral-400",
+        text: "text-neutral-800 dark:text-neutral-300",
+        border: "border-neutral-200 dark:border-neutral-700/50",
+        divide: "divide-neutral-200 dark:divide-neutral-700/50"
+      };
     }
+
     if (result.overallScore < 75) {
-      return { bg: "bg-yellow-50 border-yellow-300 border-l-4 border-l-yellow-500", text: "text-yellow-800", icon: "⚠️" };
+      return {
+        bg: "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/50 border-l-4 border-l-amber-500",
+        text: "text-amber-800 dark:text-amber-400",
+        border: "border-amber-200 dark:border-amber-900/50",
+        divide: "divide-amber-200 dark:divide-amber-900/50"
+      };
     }
+
     return result.isReal
-      ? { bg: "bg-green-50 border-green-200 border-l-4 border-l-green-600", text: "text-green-800", icon: "✅" }
-      : { bg: "bg-red-50 border-red-200 border-l-4 border-l-red-600", text: "text-red-800", icon: "❌" };
+      ? {
+        bg: "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/50 border-l-4 border-l-emerald-500",
+        text: "text-emerald-800 dark:text-emerald-400",
+        border: "border-emerald-200 dark:border-emerald-900/50",
+        divide: "divide-emerald-200 dark:divide-emerald-900/50"
+      }
+      : {
+        bg: "bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/50 border-l-4 border-l-rose-500",
+        text: "text-rose-800 dark:text-rose-400",
+        border: "border-rose-200 dark:border-rose-900/50",
+        divide: "divide-rose-200 dark:divide-rose-900/50"
+      };
   };
 
   const styles = getStyles();
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-6xl mx-auto px-4 py-12">
       <div className="mb-12 border-b border-black pb-8 dark:border-white">
         <h1 className="text-4xl md:text-5xl font-bold font-serif tracking-tight mb-4 leading-none">
           Verify News
@@ -123,7 +232,7 @@ export const Verify = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
         <div>
           <form onSubmit={handleVerify} className="space-y-6">
             <div>
@@ -157,7 +266,7 @@ export const Verify = () => {
         </div>
 
         <div>
-          <div className="p-8 border min-h-75 border-black dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 flex flex-col justify-center">
+          <div className="w-[95%] p-8 mt-1.5 border min-h-75 border-black dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 flex flex-col justify-center">
             {status === 'idle' && (
               <div className="text-center text-neutral-500">
                 <AlertCircle className="mx-auto mb-4 w-12 h-12 opacity-20" />
@@ -195,22 +304,88 @@ export const Verify = () => {
             )}
 
             {status === 'result' && result && (
-              <div className={`p-6 border min-h-full flex gap-4 ${styles.bg}`}>
-                <div className="text-4xl mt-1">{styles.icon}</div>
-                <div className="w-full">
-                  <h4 className={`font-bold text-2xl mb-4 ${styles.text}`}>
-                    {result.label}
-                  </h4>
-                  <div className="text-sm space-y-2 font-bold tracking-wide">
-                    <div className="flex justify-between"><span>🧠 AI Confidence</span> <span>{result.aiConfidence}%</span></div>
-                    <div className="flex justify-between"><span>🌐 External Sources</span> <span>{result.externalScore ?? "N/A"}%</span></div>
-                    <div className="flex justify-between pt-2 border-t border-black/10"><span>⚖️ Overall Verdict</span> <span>{result.overallScore}%</span></div>
+              <div className={`p-6 sm:p-8 rounded border shadow-lg transition-all duration-500 ease-in-out transform ${styles.bg}`}>
+
+                {/* 🔹 TOP SECTION */}
+                <div className="flex flex-col-reverse sm:flex-row gap-8 items-start sm:items-center">
+
+                  {/* LEFT TEXT */}
+                  <div className="flex-1 space-y-3 w-full">
+                    <h4 className={`text-2xl sm:text-3xl font-bold tracking-tight ${styles.text}`}>
+                      {result.label}
+                    </h4>
+
+                    <p className="text-sm sm:text-base text-neutral-700 dark:text-neutral-300 leading-relaxed font-medium">
+                      {result.reasoning}
+                    </p>
                   </div>
-                  <div className="w-full bg-black/10 h-2 rounded mt-4 overflow-hidden">
-                    <div className="h-2 rounded bg-current transition-all duration-1000" style={{ width: `${result.overallScore}%` }} />
+
+                  {/* RIGHT PIE */}
+                  <div className="flex items-center justify-center shrink-0 w-full sm:w-auto">
+                    <PieChart
+                      value={result.overallScore}
+                      isReal={result.isReal}
+                      conflict={result.conflict}
+                      trigger={animatePie}
+                    />
                   </div>
-                  <p className="text-sm mt-6 font-medium leading-relaxed opacity-90">{result.reasoning}</p>
                 </div>
+
+                <hr className={`my-6 border-t ${styles.border}`} />
+
+                {/* 🔻 TOGGLE BUTTON */}
+                <button
+                  onClick={() => setShowDetails(!showDetails)}
+                  className={`flex items-center justify-between w-full text-sm font-medium transition-opacity hover:opacity-80 ${styles.text}`}
+                >
+                  <span className="hover:underline underline-offset-4 decoration-current/50">
+                    {showDetails ? "Hide detailed analysis" : "View detailed analysis"}
+                  </span>
+                  <span className="text-2xl leading-none font-light">
+                    {showDetails ? "−" : "+"}
+                  </span>
+                </button>
+
+                {/* 🔻 DETAILS (TOGGLED) */}
+                <div
+                  className={`transition-all duration-500 ease-in-out overflow-hidden ${showDetails ? "max-h-60 opacity-100 mt-6" : "max-h-0 opacity-0"
+                    }`}
+                >
+                  <div className={`grid grid-cols-3 gap-4 pt-2 pb-4 text-center divide-x ${styles.divide}`}>
+
+                    {/* Model */}
+                    <div className="flex flex-col items-center justify-center space-y-1">
+                      <span className="text-xs font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                        Model
+                      </span>
+                      <span className="text-2xl font-semibold tabular-nums tracking-tight text-neutral-800 dark:text-neutral-200">
+                        {result.aiConfidence}%
+                      </span>
+                    </div>
+
+                    {/* Sources */}
+                    <div className="flex flex-col items-center justify-center space-y-1">
+                      <span className="text-xs font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                        Sources
+                      </span>
+                      <span className="text-2xl font-semibold tabular-nums tracking-tight text-neutral-800 dark:text-neutral-200">
+                        {result.externalScore ?? "N/A"}{result.externalScore !== null ? '%' : ''}
+                      </span>
+                    </div>
+
+                    {/* Verdict */}
+                    <div className="flex flex-col items-center justify-center space-y-1">
+                      <span className="text-xs font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                        Verdict
+                      </span>
+                      <span className={`text-2xl font-bold tabular-nums tracking-tight ${styles.text}`}>
+                        {result.overallScore}%
+                      </span>
+                    </div>
+
+                  </div>
+                </div>
+
               </div>
             )}
           </div>

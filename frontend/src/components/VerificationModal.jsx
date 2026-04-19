@@ -110,39 +110,216 @@ export const VerificationModal = ({ article, onClose }) => {
 
     if (result.conflict) {
       return {
-        bg: "bg-red-100 border-red-300 border-l-4 border-l-red-600",
-        text: "text-red-800",
-        icon: "⚠️"
+        bg: "bg-rose-50 border-rose-200 border-l-4 border-l-rose-500",
+        text: "text-rose-800",
+        border: "border-rose-200",
+        divide: "divide-rose-200"
       };
     }
 
     if (result.overallScore < 60) {
       return {
-        bg: "bg-gray-100 border-gray-300 border-l-4 border-l-gray-500",
-        text: "text-gray-800",
-        icon: "❓"
+        bg: "bg-neutral-50 border-neutral-200 border-l-4 border-l-neutral-400",
+        text: "text-neutral-800",
+        border: "border-neutral-200",
+        divide: "divide-neutral-200"
       };
     }
 
     if (result.overallScore < 75) {
       return {
-        bg: "bg-yellow-50 border-yellow-300 border-l-4 border-l-yellow-500",
-        text: "text-yellow-800",
-        icon: "⚠️"
+        bg: "bg-amber-50 border-amber-200 border-l-4 border-l-amber-500",
+        text: "text-amber-800",
+        border: "border-amber-200",
+        divide: "divide-amber-200"
       };
     }
 
     return result.isReal
       ? {
-        bg: "bg-green-50 border-green-200 border-l-4 border-l-green-600",
-        text: "text-green-800",
-        icon: "✅"
+        bg: "bg-emerald-50 border-emerald-200 border-l-4 border-l-emerald-500",
+        text: "text-emerald-800",
+        border: "border-emerald-200",
+        divide: "divide-emerald-200"
       }
       : {
-        bg: "bg-red-50 border-red-200 border-l-4 border-l-red-600",
-        text: "text-red-800",
-        icon: "❌"
+        bg: "bg-rose-50 border-rose-200 border-l-4 border-l-rose-500",
+        text: "text-rose-800",
+        border: "border-rose-200",
+        divide: "divide-rose-200"
       };
+  };
+
+  const PieChart = ({ value, isReal, conflict, trigger }) => {
+    const [progress, setProgress] = React.useState(0);
+
+    const radius = 45;
+    const stroke = 8;
+    const normalizedRadius = radius - stroke * 0.5;
+    const circumference = normalizedRadius * 2 * Math.PI;
+
+    // 🎯 Animate from 0 → value
+    React.useEffect(() => {
+      if (!trigger) return;
+
+      let start = 0;
+      const duration = 1000; // total animation time (1s)
+      const stepTime = 16; // ~60fps
+      const steps = duration / stepTime;
+      const increment = value / steps;
+
+      const interval = setInterval(() => {
+        start += increment;
+
+        if (start >= value) {
+          start = value;
+          clearInterval(interval);
+        }
+
+        setProgress(Math.round(start));
+      }, stepTime);
+
+      return () => clearInterval(interval);
+    }, [trigger, value]);
+
+    const strokeDashoffset =
+      circumference - (progress / 100) * circumference;
+
+    return (
+      <div className="relative w-[120px] h-[120px] flex items-center justify-center drop-shadow-sm">
+
+        {/* Rotated SVG */}
+        <svg className="rotate-[-90deg]" height="120" width="120">
+          <circle
+            stroke="currentColor"
+            className="text-black/10 transition-colors duration-300"
+            fill="transparent"
+            strokeWidth={stroke}
+            r={normalizedRadius}
+            cx="60"
+            cy="60"
+          />
+
+          <circle
+            stroke="currentColor"
+            className={`transition-colors duration-300 ${
+              conflict
+                ? "text-rose-500"
+                : progress < 60
+                  ? "text-neutral-400"
+                  : progress < 75
+                    ? "text-amber-500"
+                    : isReal
+                      ? "text-emerald-500"
+                      : "text-rose-500"
+            }`}
+            fill="transparent"
+            strokeWidth={stroke}
+            strokeDasharray={`${circumference} ${circumference}`}
+            style={{
+              strokeDashoffset,
+              transition: "stroke-dashoffset 0.1s linear",
+            }}
+            strokeLinecap="round"
+            r={normalizedRadius}
+            cx="60"
+            cy="60"
+          />
+        </svg>
+
+        {/* Animated % */}
+        <div className="absolute text-xl font-bold tracking-tighter text-black/80">
+          {progress}%
+        </div>
+      </div>
+    );
+  };
+
+  const ResultOption1 = ({ result, styles }) => {
+    const [open, setOpen] = useState(false);
+
+    return (
+      <div className={`p-6 border shadow-sm transition-all duration-300 ease-in-out ${styles.bg}`}>
+
+        {/* 🔹 TOP SECTION */}
+        <div className="flex gap-6 items-center">
+          <div className="flex-1 space-y-2 w-full">
+            <h4 className={`text-xl font-bold tracking-tight ${styles.text}`}>
+              {result.label}
+            </h4>
+            <p className="text-sm text-neutral-700 leading-relaxed font-medium">
+              {result.reasoning}
+            </p>
+          </div>
+
+          {/* RIGHT PIE */}
+          <div className="shrink-0 flex items-center justify-center">
+            <PieChart
+              value={result.overallScore}
+              isReal={result.isReal}
+              conflict={result.conflict}
+              trigger={status === "result"}
+            />
+          </div>
+        </div>
+
+        <hr className={`my-5 border-t ${styles.border}`} />
+
+        {/* 🔻 TOGGLE BUTTON */}
+        <button
+          onClick={() => setOpen(!open)}
+          className={`flex items-center justify-between w-full text-sm font-medium transition-opacity hover:opacity-80 ${styles.text}`}
+        >
+          <span className="hover:underline underline-offset-4 decoration-current/50">
+            {open ? "Hide detailed analysis" : "View detailed analysis"}
+          </span>
+          <span className="text-2xl leading-none font-light">
+            {open ? "−" : "+"}
+          </span>
+        </button>
+
+        {/* 🔻 DETAILS (TOGGLED) */}
+        <div
+          className={`transition-all duration-500 ease-in-out overflow-hidden ${open ? "max-h-60 opacity-100 mt-5" : "max-h-0 opacity-0"
+            }`}
+        >
+          <div className={`grid grid-cols-3 gap-2 pt-2 pb-2 text-center divide-x ${styles.divide}`}>
+
+            {/* Model */}
+            <div className="flex flex-col items-center justify-center space-y-1">
+              <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-neutral-500">
+                Model
+              </span>
+              <span className="text-xl sm:text-2xl font-semibold tabular-nums tracking-tight text-neutral-800">
+                {result.aiConfidence}%
+              </span>
+            </div>
+
+            {/* Sources */}
+            <div className="flex flex-col items-center justify-center space-y-1">
+              <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-neutral-500">
+                Sources
+              </span>
+              <span className="text-xl sm:text-2xl font-semibold tabular-nums tracking-tight text-neutral-800">
+                {result.externalScore ?? "N/A"}{result.externalScore !== null ? '%' : ''}
+              </span>
+            </div>
+
+            {/* Verdict */}
+            <div className="flex flex-col items-center justify-center space-y-1">
+              <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-neutral-500">
+                Verdict
+              </span>
+              <span className={`text-xl sm:text-2xl font-bold tabular-nums tracking-tight ${styles.text}`}>
+                {result.overallScore}%
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    );
   };
 
   const styles = getStyles();
@@ -170,32 +347,8 @@ export const VerificationModal = ({ article, onClose }) => {
           {/* RESULT */}
           {status === 'result' && result && (
             <>
-              <div className={`p-6 border flex gap-4 mb-4 ${styles.bg}`}>
-                <div className="text-2xl">{styles.icon}</div>
-
-                <div className="w-full">
-                  <h4 className={`font-bold text-lg ${styles.text}`}>
-                    {result.label}
-                  </h4>
-
-                  <div className="text-sm mt-2 space-y-1">
-                    <div>🧠 AI: {result.aiConfidence}%</div>
-                    <div>🌐 External: {result.externalScore ?? "N/A"}%</div>
-                    <div>⚖️ Final: {result.overallScore}%</div>
-                  </div>
-
-                  <div className="w-full bg-gray-200 h-2 rounded mt-3">
-                    <div
-                      className="h-2 rounded bg-black"
-                      style={{ width: `${result.overallScore}%` }}
-                    />
-                  </div>
-
-                  <p className="text-sm mt-3">{result.reasoning}</p>
-                </div>
-              </div>
-
-              <button onClick={onClose} className="w-full bg-black text-white py-3">
+              <ResultOption1 result={result} styles={styles} />
+              <button onClick={onClose} className="w-full bg-black text-white py-3 mt-4">
                 Done
               </button>
             </>

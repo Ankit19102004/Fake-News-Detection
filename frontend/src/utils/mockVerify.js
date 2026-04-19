@@ -21,12 +21,12 @@ export async function mockVerify(title, text = "", apiKey) {
         const data = await response.json();
 
         return {
-            verdict: data.prediction === "Real News" ? "REAL" : "FAKE",
-            confidence: data.confidence,              // ✅ RAW
+            verdict: (data.prediction_final || data.prediction) === "Real News" ? "REAL" : "FAKE",
+            confidence: data.confidence,
             final_score: data.final_score,
             external_score: data.external_score,
             conflict_detected: data.conflict_detected,
-            original_prediction: data.original_prediction,
+            original_prediction: data.prediction_original || data.original_prediction,
             details: data
         };
 
