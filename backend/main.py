@@ -861,8 +861,8 @@ def verify():
             {
                 "title": title,
                 # Final result
-                "prediction": resolved_label,
-                "original_prediction": final_label,
+                "prediction_final": resolved_label,
+                "prediction_original": final_label,
                 # Scores
                 "confidence": round(model_conf, 4),
                 "external_score": round(ext_score, 4),
