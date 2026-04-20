@@ -260,7 +260,7 @@ export const Verify = () => {
             <button
               type="submit"
               disabled={status === 'verifying'}
-              className="w-full h-[56px] mt-6 bg-black dark:bg-white text-white dark:text-black font-bold uppercase tracking-widest hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors disabled:opacity-50 shrink-0"
+              className="w-full h-14 mt-6 bg-black dark:bg-white text-white dark:text-black font-bold uppercase tracking-widest hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors disabled:opacity-50 shrink-0"
             >
               Verify Article
             </button>
