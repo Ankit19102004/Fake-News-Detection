@@ -9,6 +9,7 @@ import xml.etree.ElementTree as ET
 from flask import Flask, request, jsonify
 
 from dotenv import load_dotenv
+from scraper import fetch_full_article
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from transformers import (
@@ -884,6 +885,23 @@ def verify():
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
+
+@app.route("/fetch_article", methods=["POST"])
+def fetch_article():
+    body = request.json if isinstance(request.json, dict) else {}
+    title = body.get("title", "")
+    description = body.get("description", "")
+    url = body.get("url", "")
+    
+    if not title:
+        return jsonify({"error": "Title is required"}), 400
+        
+    try:
+        result = fetch_full_article(title, description, url)
+        return jsonify(result)
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
 
 # ==============================
 # RUN

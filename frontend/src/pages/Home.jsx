@@ -61,7 +61,9 @@ export const Home = ({ category = "about" }) => {
               category: typeof item.source === 'object' ? item.source.name : item.source || "General",
               date: new Date(item.publishedAt).toDateString(),
               description: item.description || "No description available",
-              image: item.urlToImage || "https://via.placeholder.com/400"
+              image: item.urlToImage || "https://via.placeholder.com/400",
+              content: item.content || "",
+              url: item.url || ""
             }));
 
           const fallbackNews = MOCK_NEWS.filter(n => {
