@@ -49,14 +49,14 @@ const PieChart = ({ value, isReal, conflict, trigger }) => {
         <circle
           stroke="currentColor"
           className={`transition-colors duration-300 ${conflict
-              ? "text-rose-500"
-              : progress < 60
-                ? "text-neutral-400"
-                : progress < 75
-                  ? "text-amber-500"
-                  : isReal
-                    ? "text-emerald-500"
-                    : "text-rose-500"
+            ? "text-rose-500"
+            : progress < 60
+              ? "text-neutral-400"
+              : progress < 75
+                ? "text-amber-500"
+                : isReal
+                  ? "text-emerald-500"
+                  : "text-rose-500"
             }`}
           fill="transparent"
           strokeWidth={stroke}
@@ -222,7 +222,7 @@ export const Verify = () => {
   const styles = getStyles();
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12">
+    <div className="max-w-[75%] mx-auto px-4 py-12">
       <div className="mb-12 border-b border-black pb-8 dark:border-white">
         <h1 className="text-4xl md:text-5xl font-bold font-serif tracking-tight mb-4 leading-none">
           Verify News
@@ -232,41 +232,44 @@ export const Verify = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        <div>
-          <form onSubmit={handleVerify} className="space-y-6">
-            <div>
-              <label className="block text-sm font-bold uppercase tracking-wider mb-2">News Title</label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter article title..."
-                className="w-full p-4 border border-black dark:border-neutral-700 bg-transparent focus:ring-2 focus:ring-black dark:focus:ring-white transition outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold uppercase tracking-wider mb-2">News Content</label>
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Paste the full article text here..."
-                rows={8}
-                className="w-full p-4 border border-black dark:border-neutral-700 bg-transparent focus:ring-2 focus:ring-black dark:focus:ring-white transition outline-none resize-none"
-              />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
+        <div className="flex flex-col h-full">
+          <form onSubmit={handleVerify} className="flex flex-col h-full">
+            <div className="space-y-6 flex-1">
+              <div>
+                <label className="block text-sm font-bold uppercase tracking-wider mb-2">News Title</label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Enter article title..."
+                  className="w-full p-4 border border-black dark:border-neutral-700 bg-transparent focus:ring-2 focus:ring-black dark:focus:ring-white transition outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold uppercase tracking-wider mb-2">News Content</label>
+                <textarea
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="Paste the full article text here..."
+                  rows={12}
+                  className="w-full p-4 border border-black dark:border-neutral-700 bg-transparent focus:ring-2 focus:ring-black dark:focus:ring-white transition outline-none resize-none"
+                />
+              </div>
             </div>
             <button
               type="submit"
               disabled={status === 'verifying'}
-              className="w-full py-4 bg-black dark:bg-white text-white dark:text-black font-bold uppercase tracking-widest hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors disabled:opacity-50"
+              className="w-full h-[56px] mt-6 bg-black dark:bg-white text-white dark:text-black font-bold uppercase tracking-widest hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors disabled:opacity-50 shrink-0"
             >
               Verify Article
             </button>
           </form>
         </div>
 
-        <div>
-          <div className="w-[95%] p-8 mt-1.5 border min-h-75 border-black dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 flex flex-col justify-center">
+        <div className="flex flex-col h-full">
+          <label className="block text-sm font-bold uppercase tracking-wider mb-1.5">Result</label>
+          <div className={`w-full p-8 border border-black dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 flex flex-col justify-center transition-all duration-300 ${status === 'result' ? 'h-full' : 'h-[calc(100%-80px)]'}`}>
             {status === 'idle' && (
               <div className="text-center text-neutral-500">
                 <AlertCircle className="mx-auto mb-4 w-12 h-12 opacity-20" />
@@ -304,7 +307,7 @@ export const Verify = () => {
             )}
 
             {status === 'result' && result && (
-              <div className={`p-6 sm:p-8 rounded border shadow-lg transition-all duration-500 ease-in-out transform ${styles.bg}`}>
+              <div className={`p-6 sm:p-8 h-[50vh] rounded border shadow-lg transition-all duration-500 ease-in-out transform ${styles.bg}`}>
 
                 {/* 🔹 TOP SECTION */}
                 <div className="flex flex-col-reverse sm:flex-row gap-8 items-start sm:items-center">
