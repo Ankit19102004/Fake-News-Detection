@@ -13,7 +13,6 @@ export const VerificationModal = ({ article, onClose }) => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus('needs_auth');
       return;
     }
@@ -186,10 +185,10 @@ export const VerificationModal = ({ article, onClose }) => {
       circumference - (progress / 100) * circumference;
 
     return (
-      <div className="relative w-[120px] h-[120px] flex items-center justify-center drop-shadow-sm">
+      <div className="relative w-30 h-30 flex items-center justify-center drop-shadow-sm">
 
         {/* Rotated SVG */}
-        <svg className="rotate-[-90deg]" height="120" width="120">
+        <svg className="-rotate-90" height="120" width="120">
           <circle
             stroke="currentColor"
             className="text-black/10 transition-colors duration-300"

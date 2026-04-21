@@ -6,6 +6,7 @@ import { Home } from './pages/Home';
 import { Auth } from './pages/Auth';
 import { ApiSettings } from './pages/ApiSettings';
 import { Verify } from './pages/Verify';
+import { VerifyUrl } from './pages/VerifyUrl';
 import { Article } from './pages/Article';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
             <Route path="auth" element={<Auth />} />
             <Route path="api-settings" element={<ApiSettings />} />
             <Route path="verify" element={<Verify />} />
+            <Route path="verify-url" element={<VerifyUrl />} />
             <Route path="article" element={<Article />} />
           </Route>
         </Routes>

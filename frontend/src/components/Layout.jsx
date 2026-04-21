@@ -41,8 +41,20 @@ const Navbar = ({ setCategory }) => {
           <button onClick={() => handleCategoryClick('science')} className="hover:text-neutral-400 transition-colors">Science</button>
           <button onClick={() => handleCategoryClick('economy')} className="hover:text-neutral-400 transition-colors">Economy</button>
           <button onClick={() => handleCategoryClick('business')} className="hover:text-neutral-400 transition-colors">Business</button>
-          <button onClick={() => handleCategoryClick('explore')} className="hover:text-neutral-400 transition-colors">Explore</button>
-          <Link to="/verify" className="hover:text-neutral-400 transition-colors">Verify</Link>
+          <button onClick={() => handleCategoryClick('explore')} className="hover:text-neutral-400 transition-colors border-r border-white/20 pr-8">Explore</button>
+          
+          <div className="relative group flex items-center">
+            <span className="hover:text-neutral-400 transition-colors cursor-pointer flex items-center gap-1">
+              Verify
+              <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            </span>
+            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-0 pt-6 w-48 opacity-0 group-hover:opacity-100 transition-all duration-300 invisible group-hover:visible z-50">
+              <div className="bg-black/95 backdrop-blur-md border border-white/10 rounded shadow-2xl flex flex-col py-2 overflow-hidden">
+                <Link to="/verify" className="px-4 py-3 hover:bg-white/10 transition-colors text-white tracking-widest text-xs border-b border-white/5">Enter News</Link>
+                <Link to="/verify-url" className="px-4 py-3 hover:bg-white/10 transition-colors text-white tracking-widest text-xs">Verify via Link</Link>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Right: Search + Auth/API tools */}

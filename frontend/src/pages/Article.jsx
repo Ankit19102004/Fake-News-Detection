@@ -176,7 +176,7 @@ export const Article = () => {
           </span>
         </div>
 
-        <h1 className="text-4xl md:text-6xl font-bold font-serif tracking-tight leading-tight mb-8">
+        <h1 className="text-3xl md:text-5xl font-bold font-serif tracking-tight leading-tight mb-8 text-justify">
           {article.title}
         </h1>
 

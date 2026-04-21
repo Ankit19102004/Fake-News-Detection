@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET
 from flask import Flask, request, jsonify
 
 from dotenv import load_dotenv
-from scraper import fetch_full_article
+from scraper import fetch_full_article, extract_metadata_from_url
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from transformers import (
@@ -760,7 +760,6 @@ def index():
 
 @app.route("/test_hybrid", methods=["GET"])
 def test_hybrid():
-    """Quick diagnostic: check loaded hybrid models."""
     return jsonify(
         {
             "hybrid_models_loaded": len(hybrid_ensemble.models),
@@ -893,14 +892,34 @@ def fetch_article():
     description = body.get("description", "")
     url = body.get("url", "")
     
+    if not title and url:
+        metadata = extract_metadata_from_url(url)
+        title = metadata.get("title", "Scraped Article from URL")
+        description = metadata.get("description", "")
+        
     if not title:
-        return jsonify({"error": "Title is required"}), 400
+        return jsonify({"error": "Title or URL is required"}), 400
         
     try:
         result = fetch_full_article(title, description, url)
+        # Pass back metadata if they only provided URL
+        if not body.get("title") and url:
+            result["scraped_metadata"] = metadata
         return jsonify(result)
     except Exception as e:
         traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/extract_metadata", methods=["POST"])
+def extract_metadata():
+    body = request.json if isinstance(request.json, dict) else {}
+    url = body.get("url", "")
+    if not url:
+        return jsonify({"error": "URL is required"}), 400
+    try:
+        metadata = extract_metadata_from_url(url)
+        return jsonify(metadata)
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 # ==============================

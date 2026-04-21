@@ -44,6 +44,40 @@ def scrape_url(url: str) -> str:
         print(f"[Scraper Error] {e}")
         return ""
 
+def extract_metadata_from_url(url: str) -> dict:
+    """Fetch URL and extract basic metadata like title, description, image."""
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                          '(KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36'
+        }
+        res = requests.get(url, headers=headers, timeout=10)
+        if res.status_code != 200:
+            return {}
+        
+        soup = BeautifulSoup(res.content, 'html.parser')
+        
+        title = soup.title.string if soup.title else ""
+        if not title:
+            og_title = soup.find("meta", property="og:title")
+            title = og_title["content"] if og_title else ""
+            
+        desc_tag = soup.find("meta", attrs={"name": "description"})
+        og_desc = soup.find("meta", property="og:description")
+        description = (og_desc["content"] if og_desc else "") or (desc_tag["content"] if desc_tag else "")
+        
+        og_img = soup.find("meta", property="og:image")
+        image = og_img["content"] if og_img else "https://via.placeholder.com/800x400?text=Article+Image"
+        
+        return {
+            "title": title.strip(),
+            "description": description.strip(),
+            "image": image.strip()
+        }
+    except Exception as e:
+        print(f"[Metadata Extraction Error] {e}")
+        return {}
+
 def fetch_full_article(title: str, description: str = "", url: str = "") -> dict:
     """Implement exact steps requested by user."""
     NEWSDATA_KEY = os.getenv("NEWSDATA_API_KEY")
