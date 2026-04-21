@@ -68,7 +68,7 @@ export const VerifyUrl = () => {
       <div className="max-w-2xl mx-auto">
         <form onSubmit={handleSearch} className="flex flex-col gap-6 p-8 border border-black dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 shadow-sm">
           <div>
-            <label className="block text-sm font-bold uppercase tracking-wider mb-2 items-center gap-2">
+            <label className="flex text-sm font-bold uppercase tracking-wider mb-2 items-center gap-2">
               <LinkIcon size={16} /> Article / Post Link
             </label>
             <input
