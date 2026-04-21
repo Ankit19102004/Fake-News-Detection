@@ -53,6 +53,7 @@ export const Home = ({ category = "about" }) => {
 
   const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
+  const API_BASE_URL = (API_URL || 'http://localhost:5000').replace(/\/$/, '');
   const normalizedCategory = category?.toLowerCase() || 'technology';
   const isExplore = normalizedCategory === 'explore';
 
@@ -66,8 +67,17 @@ export const Home = ({ category = "about" }) => {
 
         if (isExplore) {
           const res = await fetch(
-            `${API_URL}/explore_news?year=${selectedYear}&limit=18`
+            `${API_BASE_URL}/explore_news?year=${selectedYear}&limit=18`
           );
+          const contentType = res.headers.get('content-type') || '';
+
+          if (!contentType.includes('application/json')) {
+            const responsePreview = (await res.text()).slice(0, 120);
+            throw new Error(
+              `Explore API returned ${contentType || 'a non-JSON response'} instead of JSON. Check VITE_API_URL or backend server. ${responsePreview}`
+            );
+          }
+
           const data = await res.json();
           console.log("EXPLORE API RESPONSE:", data);
 
@@ -81,6 +91,7 @@ export const Home = ({ category = "about" }) => {
           }));
 
           if (formatted.length > 0) {
+            setExploreMessage(data.message || '');
             setArticles(formatted);
           } else {
             setExploreMessage(`No archived articles were found for ${selectedYear}.`);
@@ -155,7 +166,7 @@ export const Home = ({ category = "about" }) => {
     };
 
     fetchNews();
-  }, [category, API_KEY, API_URL, isExplore, normalizedCategory, selectedYear]);
+  }, [category, API_BASE_URL, API_KEY, isExplore, normalizedCategory, selectedYear]);
 
   const handleVerify = (article) => {
     setSelectedArticle(article);
@@ -182,19 +193,36 @@ export const Home = ({ category = "about" }) => {
               </p>
             </div>
 
-            <label className="flex flex-col gap-2 text-sm font-bold uppercase tracking-[0.15em] text-neutral-700 dark:text-neutral-300">
-              Filter By Year
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className="min-w-44 border border-black bg-white px-4 py-3 text-sm font-semibold text-neutral-900 outline-none transition-colors focus:border-neutral-500 dark:border-white dark:bg-neutral-900 dark:text-white"
-              >
-                {EXPLORE_YEARS.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+            <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+              Filter by Year
+
+              <div className="relative w-44">
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  className="w-full appearance-none border border-neutral-300 bg-white px-4 py-3 pr-10 text-sm font-semibold text-neutral-900 shadow-sm transition-all duration-200 focus:border-black focus:ring-2 focus:ring-black/10 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white/10"
+                >
+                  {EXPLORE_YEARS.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Custom Arrow */}
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-neutral-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </label>
           </div>
         )}

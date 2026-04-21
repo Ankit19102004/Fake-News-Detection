@@ -5,10 +5,12 @@ import torch.nn as nn
 import requests
 from urllib.parse import quote
 import xml.etree.ElementTree as ET
+from datetime import datetime
 
 from flask import Flask, request, jsonify
 
 from dotenv import load_dotenv
+from archive import get_explore_news
 from scraper import fetch_full_article, extract_metadata_from_url
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
@@ -921,6 +923,26 @@ def extract_metadata():
         return jsonify(metadata)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/explore_news", methods=["GET"])
+def explore_news():
+    current_year = datetime.utcnow().year
+    year = request.args.get("year", type=int) or current_year
+    limit = request.args.get("limit", default=18, type=int) or 18
+    limit = max(1, min(limit, 50))
+
+    articles, message = get_explore_news(year, limit)
+
+    return jsonify(
+        {
+            "status": "success",
+            "year": year,
+            "count": len(articles),
+            "message": message,
+            "articles": articles,
+        }
+    )
 
 # ==============================
 # RUN

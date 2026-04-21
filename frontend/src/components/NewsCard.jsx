@@ -10,9 +10,9 @@ export const NewsCard = ({ article, onVerify, hideVerify = false }) => {
   };
 
   return (
-    <div className="flex flex-col h-full group hover:-translate-y-1 transition-transform duration-300">
+    <div className="flex flex-col h-full group hover:-translate-y-1 transition-transform duration-300 hover:shadow-xl">
       {/* Image container */}
-      <div 
+      <div
         onClick={handleReadArticle}
         className="relative aspect-4/3 w-full overflow-hidden mb-4 bg-neutral-100 dark:bg-neutral-800 cursor-pointer"
       >
@@ -37,20 +37,20 @@ export const NewsCard = ({ article, onVerify, hideVerify = false }) => {
       </div>
 
       {/* Meta Date */}
-      <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+      <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2 flex items-center gap-2 ml-2">
         <span>{article.date}</span>
       </div>
 
       {/* Title */}
-      <h3 
+      <h3
         onClick={handleReadArticle}
-        className="text-2xl font-bold leading-tight mb-3 text-neutral-900 grow dark:text-neutral-100 font-serif cursor-pointer hover:underline decoration-2 underline-offset-4"
+        className="text-2xl font-bold leading-tight mb-3 text-neutral-900 grow dark:text-neutral-100 font-serif cursor-pointer hover:underline decoration-2 underline-offset-4 mx-2"
       >
         {article.title}
       </h3>
 
       {/* Description */}
-      <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-6 line-clamp-3">
+      <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-6 line-clamp-3 mx-2">
         {article.description}
       </p>
 
@@ -59,7 +59,7 @@ export const NewsCard = ({ article, onVerify, hideVerify = false }) => {
         <div className="mt-auto pt-4 border-t border-neutral-200 dark:border-neutral-800 flex justify-between items-center">
           <button
             onClick={() => onVerify && onVerify(article)}
-            className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide bg-neutral-900 border border-neutral-900 text-white dark:bg-white dark:text-black dark:border-white px-4 py-2 hover:bg-black hover:text-white dark:hover:bg-neutral-200 transition-colors"
+            className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide bg-neutral-900 border border-neutral-900 text-white dark:bg-white dark:text-black dark:border-white px-4 py-2 hover:bg-black hover:text-white dark:hover:bg-neutral-200 transition-colors cursor-pointer"
           >
             <ShieldCheck size={18} />
             Verify News
