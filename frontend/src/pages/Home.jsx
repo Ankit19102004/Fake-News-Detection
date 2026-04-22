@@ -1,25 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { NewsCard } from '../components/NewsCard';
 import { VerificationModal } from '../components/VerificationModal';
+import { MOCK_NEWS } from '../data/articles';
 
-const MOCK_NEWS = [
-  {
-    id: 1,
-    title: "Global Markets Rally as Tech Giants Post Record Ecosystem Growth",
-    category: "Economy",
-    date: "Aug 25 • 2026",
-    description: "In an unexpected turn...",
-    image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f"
-  },
-  {
-    id: 2,
-    title: "Australia wins 2023 ICC Cricket World Cup final against India",
-    category: "Sport",
-    date: "Nov 19 • 2023",
-    description: "Australia won the 2023 ICC Men’s Cricket World Cup...",
-    image: "https://www.reuters.com/resizer/v2/BNBV7GTOSRIOFAZIFBFKTWQM44.jpg?auth=99c5cbe885c196b142d4bb3be2fa0b78d4fda5ab30e37bb7912bf6c7afb70a79"
-  }
-];
 
 const CURRENT_YEAR = new Date().getFullYear();
 const EXPLORE_START_YEAR = 2020;
