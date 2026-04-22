@@ -177,17 +177,17 @@ export const Home = ({ category = "about" }) => {
 
       {/* Header */}
       <div className="mb-16 border-b border-black pb-8 dark:border-white">
-        <h1 className="text-4xl md:text-7xl font-bold font-serif tracking-tight mb-4 leading-none">
+        <h1 className="text-4xl md:text-7xl font-bold font-serif tracking-tight mb-4 leading-none text-neutral-900 dark:text-neutral-50">
           Truth Beyond the Surface
         </h1>
-        <p className="text-xl text-neutral-500 max-w-2xl font-bold uppercase tracking-widest">
+        <p className="text-xl text-neutral-500 dark:text-neutral-400 max-w-2xl font-bold uppercase tracking-widest">
           Curated insights, bold stories, and verified facts.
         </p>
 
         {isExplore && (
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-2xl font-bold font-serif">Explore News</h2>
+              <h2 className="text-2xl font-bold font-serif text-neutral-900 dark:text-neutral-50">Explore News</h2>
               <p className="text-sm uppercase tracking-[0.2em] text-neutral-500 mt-2">
                 Browse major stories year by year
               </p>
@@ -228,7 +228,7 @@ export const Home = ({ category = "about" }) => {
         )}
 
         {isExplore && (
-          <p className="mt-4 text-sm text-neutral-500">
+          <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
             Explore loads archived headlines year-wise from the backend archive feed.
           </p>
         )}

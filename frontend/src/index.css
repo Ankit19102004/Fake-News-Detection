@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", system-ui, sans-serif;
   --font-serif: "Playfair Display", Georgia, serif;
@@ -11,7 +13,7 @@
     font-family: "Inter", sans-serif;
   }
 
-  /* Basic Dark Mode - users can toggle by adding 'dark' class to html */
+  /* Basic Dark Mode - only activates when the app adds `dark` to html */
   html.dark body {
     @apply bg-neutral-950 text-neutral-50;
   }
