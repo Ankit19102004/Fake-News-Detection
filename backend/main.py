@@ -151,7 +151,9 @@ def prepare_text_for_verification(title: str, text: str) -> dict:
         else normalized_title
     )
     translated_text = (
-        translator.translate(normalized_text) if text_was_translated else normalized_text
+        translator.translate(normalized_text)
+        if text_was_translated
+        else normalized_text
     )
 
     return {
@@ -191,22 +193,20 @@ def pad_sequences(sequences: list, maxlen: int, padding: str = "pre") -> np.ndar
 
 
 def check_external_news(query: str) -> float:
-    """Improved external verification with weighted scoring + Google RSS"""
+    """Improved external verification with weighted + scaled scoring"""
 
     if not query:
         return 0.0
 
-    # 🔹 Full query
     encoded = quote(query)
 
-    # 🔹 Smart keyword extraction (for Mediastack + Google)
     stop_words = {"the", "is", "in", "on", "at", "a", "an", "of", "for", "to", "and"}
     keywords = [w for w in query.lower().split() if w not in stop_words]
     simple_query = " ".join(keywords[:3])
     encoded_simple = quote(simple_query)
 
     # =========================
-    # SCORES
+    # SCORES (scaled now)
     # =========================
     newsdata = 0
     newsapi = 0
@@ -222,8 +222,9 @@ def check_external_news(query: str) -> float:
             f"https://newsdata.io/api/1/news?apikey={NEWSDATA_KEY}&q={encoded}",
             timeout=5,
         )
-        if r.status_code == 200 and r.json().get("totalResults", 0) > 0:
-            newsdata = 1
+        if r.status_code == 200:
+            total = r.json().get("totalResults", 0)
+            newsdata = min(total / 3, 1)
     except Exception:
         pass
 
@@ -235,8 +236,9 @@ def check_external_news(query: str) -> float:
             f"https://newsapi.org/v2/everything?q={encoded}&apiKey={NEWSAPI_KEY}&pageSize=1",
             timeout=5,
         )
-        if r.status_code == 200 and r.json().get("totalResults", 0) > 0:
-            newsapi = 1
+        if r.status_code == 200:
+            total = r.json().get("totalResults", 0)
+            newsapi = min(total / 3, 1)
     except Exception:
         pass
 
@@ -248,29 +250,30 @@ def check_external_news(query: str) -> float:
             f"https://gnews.io/api/v4/search?q={encoded}&token={GNEWS_KEY}&max=1",
             timeout=5,
         )
-        if r.status_code == 200 and r.json().get("totalArticles", 0) > 0:
-            gnews = 1
+        if r.status_code == 200:
+            total = r.json().get("totalArticles", 0)
+            gnews = min(total / 3, 1)
     except Exception:
         pass
 
     # =========================
-    # 4. MEDIASTACK (FIXED)
+    # 4. MEDIASTACK
     # =========================
     try:
         r = requests.get(
             f"https://api.mediastack.com/v1/news?access_key={MEDIASTACK_KEY}&keywords={encoded_simple}&limit=1",
             timeout=5,
         )
-        total = r.json().get("pagination", {}).get("total", 0)
+        if r.status_code == 200:
+            total = r.json().get("pagination", {}).get("total", 0)
 
-        # 🔥 Ignore noisy results
-        if r.status_code == 200 and 0 < total < 5000:
-            mediastack = 1
+            if 0 < total < 5000:  # filter noise
+                mediastack = min(total / 5, 1)
     except Exception:
         pass
 
     # =========================
-    # 5. GOOGLE NEWS RSS ⭐
+    # 5. GOOGLE RSS
     # =========================
     try:
         r = requests.get(
@@ -280,8 +283,7 @@ def check_external_news(query: str) -> float:
         root = ET.fromstring(r.content)
         items = root.findall(".//item")
 
-        if len(items) > 0:
-            google = 1
+        google = min(len(items) / 8, 1)
     except Exception:
         pass
 
@@ -289,12 +291,31 @@ def check_external_news(query: str) -> float:
     # FINAL WEIGHTED SCORE
     # =========================
     score = (
-        newsdata * 0.35
-        + newsapi * 0.15
+        newsapi * 0.30
         + gnews * 0.25
+        + newsdata * 0.20
+        + google * 0.20
         + mediastack * 0.05
-        + google * 0.2
     )
+
+    # =========================
+    # AGREEMENT BOOST 🔥
+    # =========================
+    sources_hit = sum(
+        [
+            1 if newsapi > 0 else 0,
+            1 if gnews > 0 else 0,
+            1 if newsdata > 0 else 0,
+            1 if google > 0 else 0,
+            1 if mediastack > 0 else 0,
+        ]
+    )
+
+    if sources_hit >= 3:
+        score += 0.1
+
+    # Clamp score
+    score = min(score, 1.0)
 
     return round(score, 4)
 
@@ -939,15 +960,15 @@ def fetch_article():
     title = body.get("title", "")
     description = body.get("description", "")
     url = body.get("url", "")
-    
+
     if not title and url:
         metadata = extract_metadata_from_url(url)
         title = metadata.get("title", "Scraped Article from URL")
         description = metadata.get("description", "")
-        
+
     if not title:
         return jsonify({"error": "Title or URL is required"}), 400
-        
+
     try:
         result = fetch_full_article(title, description, url)
         # Pass back metadata if they only provided URL
@@ -957,6 +978,7 @@ def fetch_article():
     except Exception as e:
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/extract_metadata", methods=["POST"])
 def extract_metadata():
@@ -989,6 +1011,7 @@ def explore_news():
             "articles": articles,
         }
     )
+
 
 # ==============================
 # RUN
