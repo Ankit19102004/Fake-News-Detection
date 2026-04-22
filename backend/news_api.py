@@ -161,4 +161,4 @@ def test_all_apis(query):
 # RUN TEST
 # ==============================
 if __name__ == "__main__":
-    test_all_apis("Australia World Cup 2023")
+    test_all_apis("What happened to Leicester City? Why Foxes face back-to-back relegations 10 years on from historic Premier League title")

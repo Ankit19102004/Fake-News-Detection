@@ -14,6 +14,7 @@ from archive import get_explore_news
 from scraper import fetch_full_article, extract_metadata_from_url
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
+from translator.translator import Translator
 from transformers import (
     AutoModel,
     AutoTokenizer,
@@ -57,6 +58,7 @@ def after_request(response):
 device = torch.device("cpu")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 API_KEYS_FILE = "api_keys.json"
+translator = Translator()
 
 # ==============================
 # NLTK
@@ -117,6 +119,51 @@ def preprocess_text(text: str) -> str:
     """Lowercase, remove non-alpha, strip stopwords, stem."""
     tokens = re.sub("[^a-zA-Z]", " ", text).lower().split()
     return " ".join(ps.stem(w) for w in tokens if w not in all_stopwords)
+
+
+def detect_input_language(title: str, text: str) -> str:
+    combined = " ".join(
+        part.strip() for part in [title, text] if isinstance(part, str) and part.strip()
+    )
+
+    if not combined:
+        return "english"
+
+    return translator.detect_language(combined)
+
+
+def prepare_text_for_verification(title: str, text: str) -> dict:
+    """Translate non-English news into English before model verification."""
+    normalized_title = title.strip() if isinstance(title, str) else ""
+    normalized_text = text.strip() if isinstance(text, str) else ""
+    detected_language = detect_input_language(normalized_title, normalized_text)
+
+    title_was_translated = bool(normalized_title) and translator.needs_translation(
+        normalized_title
+    )
+    text_was_translated = bool(normalized_text) and translator.needs_translation(
+        normalized_text
+    )
+
+    translated_title = (
+        translator.translate(normalized_title)
+        if title_was_translated
+        else normalized_title
+    )
+    translated_text = (
+        translator.translate(normalized_text) if text_was_translated else normalized_text
+    )
+
+    return {
+        "original_title": normalized_title,
+        "original_text": normalized_text,
+        "translated_title": translated_title,
+        "translated_text": translated_text,
+        "was_translated": title_was_translated or text_was_translated,
+        "title_was_translated": title_was_translated,
+        "text_was_translated": text_was_translated,
+        "language": detected_language,
+    }
 
 
 # ==============================
@@ -813,13 +860,18 @@ def verify():
             return jsonify({"error": "Provide 'text' in request body"}), 400
 
         text = data["text"].strip()
-        external = data.get("title", text[:100])
         title = data.get("title", text)
 
         if not text:
             return jsonify({"error": "Empty text"}), 400
 
-        full_doc = f"{title} {text}".strip()
+        prepared = prepare_text_for_verification(title, text)
+        verification_title = (
+            prepared["translated_title"] or prepared["original_title"] or title
+        )
+        verification_text = prepared["translated_text"] or prepared["original_text"]
+        external = verification_title or verification_text[:100]
+        full_doc = f"{verification_title} {verification_text}".strip()
 
         # Safe wrapper
         def safe(fn):
@@ -861,24 +913,18 @@ def verify():
 
         return jsonify(
             {
-                "title": title,
-                # Final result
-                "prediction_final": resolved_label,
-                "prediction_original": final_label,
-                # Scores
-                "confidence": round(model_conf, 4),
-                "external_score": round(ext_score, 4),
                 "final_score": round(final_score, 4),
                 "accuracy": f"{final_accuracy}%",
-                # Conflict info
+                "confidence": round(model_conf, 4),
                 "conflict_detected": conflict_flag,
-                "message": (
-                    "External sources strongly contradict model prediction"
-                    if conflict_flag
-                    else "No conflict detected"
-                ),
-                # Model breakdown
+                "external_score": round(ext_score, 4),
+                "language": prepared["language"],
                 "models": format_output(raw),
+                "prediction_final": resolved_label,
+                "prediction_original": final_label,
+                "news_title": verification_title,
+                "translation": prepared["was_translated"],
+                "news_text": verification_text,
             }
         )
 
